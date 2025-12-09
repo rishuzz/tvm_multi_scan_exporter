@@ -21,3 +21,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Fixed a bug that missed a few records in the final exported file.
+
+## [0.1.2] - 2025-12-09
+
+### Added
+
+- Support for comma separated values in the `scan_name` field of the configuration file to allow exporting multiple scans in a single run.

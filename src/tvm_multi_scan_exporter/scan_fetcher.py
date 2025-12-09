@@ -45,16 +45,22 @@ class ScansFetcher:
         Gets all the scans by name. This applies a case-insensitive `contains` check.
         :return:
         """
-        return [
-            Scan(
-                uuid=scan.get("uuid", None),
-                name=scan["name"],
-                schedule_uuid=scan["schedule_uuid"],
-                id=scan.get("id", scan["id"])
-            )
-            for scan in self._tio.scans.list()
-            if config.scan_name.lower() in scan["name"].lower()
-        ]
+        scan_names = [name.strip().lower() for name in config.scan_name.split(',')]
+        matched_scans: List[Scan] = []
+        for scan in self._tio.scans.list():
+            scan_name_lower = scan["name"].lower()
+            matched_term = next((name for name in scan_names if name and name in scan_name_lower), None)
+            if matched_term is not None:
+                logging.info(f"Matched scan '{scan['name']}' (id={scan.get('id')}) using filter term '{matched_term}'.")
+                matched_scans.append(
+                    Scan(
+                        uuid=scan.get("uuid", None),
+                        name=scan["name"],
+                        schedule_uuid=scan["schedule_uuid"],
+                        id=scan.get("id", scan["id"])
+                    )
+                )
+        return matched_scans
 
     def _histories_for_scan(self, scan: Scan, config: Config) -> List[ScanHistory]:
         """
