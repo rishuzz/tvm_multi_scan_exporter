@@ -26,7 +26,7 @@ class ScansFetcher:
             # get all scans that match the `contains` name criteria
             all_matching_scans: List[Scan] = self._scans_by_name(config)
             logging.info(
-                f"{len(all_matching_scans)} scan(s) matched the scan_names filter {config.scan_name}.")
+                f"{len(all_matching_scans)} scan(s) matched the scan_name filter {config.scan_name}.")
 
             # if there are scans, look for histories.
             if all_matching_scans:
