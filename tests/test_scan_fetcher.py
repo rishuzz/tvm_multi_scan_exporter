@@ -95,3 +95,53 @@ def test_histories_with_no_matching_histories(mock_tio):
     histories = fetcher.scan_histories(config)
 
     assert len(histories) == 0
+
+
+@patch("tvm_multi_scan_exporter.scan_fetcher.TenableIO")
+def test_scans_by_name_with_multiple_comma_separated_names(mock_tio):
+    # Mock TenableIO
+    mock_tio.scans.list.return_value = [
+        {"uuid": "uuid1", "name": "First Scan", "schedule_uuid": "sched1", "id": 1},
+        {"uuid": "uuid2", "name": "Second Scan", "schedule_uuid": "sched2", "id": 2},
+        {"uuid": "uuid3", "name": "Third Scan", "schedule_uuid": "sched3", "id": 3},
+    ]
+    config = Config(scan_name="First,Third", allowed_memory_gb=2)
+
+    fetcher = ScansFetcher(mock_tio)
+    scans = fetcher._scans_by_name(config)
+
+    assert len(scans) == 2
+    assert Scan(uuid="uuid1", name="First Scan", schedule_uuid="sched1", id=1) in scans
+    assert Scan(uuid="uuid3", name="Third Scan", schedule_uuid="sched3", id=3) in scans
+
+
+@patch("tvm_multi_scan_exporter.scan_fetcher.TenableIO")
+def test_scans_by_name_with_whitespace_and_case_insensitivity(mock_tio):
+    # Mock TenableIO
+    mock_tio.scans.list.return_value = [
+        {"uuid": "uuid1", "name": "Test Scan 1", "schedule_uuid": "sched1", "id": 1},
+        {"uuid": "uuid2", "name": "Another Scan", "schedule_uuid": "sched2", "id": 2},
+    ]
+    config = Config(scan_name="  test scan  ,  ANOTHER SCAN  ", allowed_memory_gb=2)
+
+    fetcher = ScansFetcher(mock_tio)
+    scans = fetcher._scans_by_name(config)
+
+    assert len(scans) == 2
+    assert Scan(uuid="uuid1", name="Test Scan 1", schedule_uuid="sched1", id=1) in scans
+    assert Scan(uuid="uuid2", name="Another Scan", schedule_uuid="sched2", id=2) in scans
+
+
+@patch("tvm_multi_scan_exporter.scan_fetcher.TenableIO")
+def test_scans_by_name_no_matches(mock_tio):
+    # Mock TenableIO
+    mock_tio.scans.list.return_value = [
+        {"uuid": "uuid1", "name": "Test Scan 1", "schedule_uuid": "sched1", "id": 1},
+    ]
+    config = Config(scan_name="NonExistent, Other", allowed_memory_gb=2)
+
+    fetcher = ScansFetcher(mock_tio)
+    scans = fetcher._scans_by_name(config)
+
+    assert len(scans) == 0
+

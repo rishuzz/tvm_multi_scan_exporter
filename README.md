@@ -18,11 +18,11 @@ Users can create the following types of aggregated scan exports.
 2. `JSON` - A single JSON file will be created in the same directory of the script you write.
 3. `Parquet` - A single Apache Parquet file will be created in the same directory of the script you write.
 4. `Write to DB` - The result of the export will be written to an external database
-    - Users need to provide database credentials to a real DB, and the results of the exports are dumped into it. The
-      database needs to be created by the user before using this library. A table will be automatically created.
-    - > ⚠️ **Disclaimer**
-      Make sure the columns stay the same each time you use this export option. If the schema changes between exports,
-      the library will raise an error.
+   - Users need to provide database credentials to a real DB, and the results of the exports are dumped into it. The
+     database needs to be created by the user before using this library. A table will be automatically created.
+   - > ⚠️ **Disclaimer**
+     Make sure the columns stay the same each time you use this export option. If the schema changes between exports,
+     the library will raise an error.
 
 ## How to use this library.
 
@@ -55,8 +55,7 @@ Below is a detailed overview of the supported configuration options available in
 
 #### Config
 
-1. `scan_name` (str) Scan Name to export. A case-insensitive contains check will be run on this value. This is a *
-   *mandatory** field.
+1. `scan_name` (str) A comma-separated list of scan names to export. A case-insensitive 'contains' check will be performed for each name. This is a **mandatory** field.
 2. `allowed_memory_gb` (int) Allowed memory for the Duck DB process on the client. This is a **mandatory** field.
 3. `workers` (int) Parallelism for running exports. Defaults to 1. This value should be between 1 and 10.
 4. `window` (`Window`) Window to export scans.
